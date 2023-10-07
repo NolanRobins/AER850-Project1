@@ -24,17 +24,17 @@ strat_train_set = strat_train_set.drop(columns=["Step"], axis = 1)
 #strat_test_set = strat_test_set.drop(columns=["Step"], axis = 1)
 
 fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-ay = fig.add_subplot()
+#ax = fig.add_subplot(111, projection='3d')
+#ay = fig.add_subplot()
 
 pd.plotting.scatter_matrix(strat_train_set, c = train_y)
-#strat_train_set.plot(kind="scatter", x="X", y="Z", alpha=0.1)
-p = ax.scatter(strat_train_set["X"], strat_train_set["Y"], strat_train_set["Z"], c = train_y)
-fig.colorbar(p)
-ax.set_xlabel('X Label')
-ax.set_ylabel('Y Label')
-ax.set_zlabel('Z Label')
-#ay.scatter(strat_train_set["X"], strat_train_set["Y"], s=200, c=strat_train_set["Step"], cmap='Greens')
+# strat_train_set.plot(kind="scatter", x="X", y="Z", alpha=0.1)
+# p = ax.scatter(strat_train_set["X"], strat_train_set["Y"], strat_train_set["Z"], c = train_y)
+# fig.colorbar(p)
+# ax.set_xlabel('X Label')
+# ax.set_ylabel('Y Label')
+# ax.set_zlabel('Z Label')
+# ay.scatter(strat_train_set["X"], strat_train_set["Y"], s=200, c=strat_train_set["Step"], cmap='Greens')
 
 
 
