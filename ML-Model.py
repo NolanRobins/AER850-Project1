@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns 
 from sklearn.model_selection import StratifiedShuffleSplit
+from sklearn.neighbors import KNeighborsClassifier
+import sklearn
 
 
 
@@ -21,6 +23,8 @@ for train_index, test_index in split.split(df, df["Step"]):
 
 train_y = strat_train_set["Step"]
 strat_train_set = strat_train_set.drop(columns=["Step"], axis = 1)
+test_y = strat_test_set["Step"]
+strat_test_set = strat_test_set.drop(columns = ["Step"], axis = 1)
 #strat_test_set = strat_test_set.drop(columns=["Step"], axis = 1)
 
 fig = plt.figure()
@@ -36,11 +40,28 @@ pd.plotting.scatter_matrix(strat_train_set, c = train_y)
 # ax.set_zlabel('Z Label')
 # ay.scatter(strat_train_set["X"], strat_train_set["Y"], s=200, c=strat_train_set["Step"], cmap='Greens')
 
-
-
-
 plt.show()
 corr_matrix = strat_train_set.corr()
+sns.heatmap(np.abs(corr_matrix), annot = True)
+
+nearestn = KNeighborsClassifier(n_neighbors = 3)
+nearestn.fit(strat_train_set, train_y)
+
+
+nearest_train_prediction = nearestn.predict(strat_train_set)
+nearestn_train_mae = sklearn.metrics.mean_absolute_error(nearest_train_prediction, train_y)
+
+print("Model 1 training MAE is: ", round(nearestn_train_mae,2))
+
+nearestn_test_prediction = nearestn.predict(strat_test_set)
+nearestn_test_mae = sklearn.metrics.mean_absolute_error(nearestn_test_prediction, test_y)
+
+print("Model 1 test set MAE is: ", round(nearestn_test_mae,2))
+
+plt.figure(2)
+plt.scatter(x = test_y, y = nearestn_test_prediction)
+plt.show()
+
 #print(corr_matrix["Step"].sort_values())
 
 
