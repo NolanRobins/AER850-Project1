@@ -9,6 +9,7 @@ from sklearn.neural_network import MLPRegressor, MLPClassifier
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn import preprocessing
 from sklearn.metrics import precision_score, recall_score, f1_score, confusion_matrix, ConfusionMatrixDisplay
+import joblib
 
 
 
@@ -70,7 +71,6 @@ strat_test_set = strat_test_set.drop(columns = ["Step"], axis = 1)
 
 data_scaler = preprocessing.StandardScaler().fit(strat_train_set)
 train_x = pd.DataFrame(data_scaler.transform(strat_train_set))
-
 test_x = pd.DataFrame(data_scaler.transform(strat_test_set))
 
 
@@ -104,9 +104,6 @@ nearest_n_param_grid = {
     'leaf_size': [5, 10, 20, 30, 40, 50],
     'algorithm': ['ball_tree', 'kd_tree'],
 }
-
-nearest_n_recall_score = None
-nearest_n_precision_score = None
 
 [nearest_n, nearest_n_test_prediction] = run_model(nearest_n, nearest_n_param_grid, train_x, train_y, test_x, test_y, 'Nearest Neighbor')
 
@@ -149,6 +146,17 @@ nearest_n_confusion_matrix = confusion_matrix(y_true = test_y, y_pred = nearest_
 confusion_disp = ConfusionMatrixDisplay(confusion_matrix=nearest_n_confusion_matrix)
 confusion_disp.plot()
 plt.show()
+
+joblib.dump(nearest_n, 'nearest_n_model.joblib')
+
+loaded_model = joblib.load('nearest_n_model.joblib')
+
+to_predict = pd.DataFrame([[9.375, 3.0625, 1.51], [6.995, 5.125, 0.3875], [0,3.0625, 1.93], [9.4, 3, 1.8], [9.4, 3, 1.3]])
+to_predict.columns = ['X', 'Y', 'Z']
+
+predictions = loaded_model.predict(pd.DataFrame(data_scaler.transform(to_predict)))
+
+print(predictions)
 
 
 #if __name__ == "__main__":
