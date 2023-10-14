@@ -79,7 +79,7 @@ sns.heatmap(np.abs(corr_matrix), annot = True)
 
 
 #------------------------------------------------Nearest Neighbor-----------------------------------------------
-nearestn = KNeighborsClassifier()
+nearest_n = KNeighborsClassifier()
 
 
 nearest_n_param_grid = {
@@ -89,7 +89,7 @@ nearest_n_param_grid = {
     'algorithm': ['ball_tree', 'kd_tree'],
 }
 
-run_model(nearestn, nearest_n_param_grid, train_x, train_y, test_x, test_y, 'Nearest Neighbor')
+run_model(nearest_n, nearest_n_param_grid, train_x, train_y, test_x, test_y, 'Nearest Neighbor')
 
 #---------------------------------------------------------------------------------------------------------------
 
@@ -110,16 +110,16 @@ run_model(perceptron_model, perceptron_model_param_grid, train_x, train_y, test_
 
 
 #-------------------------------------------------Random Forest-------------------------------------------------
-randfor_model = RandomForestClassifier(random_state = 5)
+rand_for_model = RandomForestClassifier(random_state = 5)
 
 
-randfor_model_param_grid = {
+rand_for_model_param_grid = {
     'n_estimators': [10, 50, 100, 200, 500],
     'min_samples_leaf': [0.5, 1, 2, 5, 10, 20],
     'max_features': ['sqrt', 'log2', None],
 }
 
-run_model(randfor_model, randfor_model_param_grid, train_x, train_y, test_x, test_y, 'Random Forest')
+run_model(rand_for_model, rand_for_model_param_grid, train_x, train_y, test_x, test_y, 'Random Forest')
 
 #---------------------------------------------------------------------------------------------------------------
 
