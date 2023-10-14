@@ -7,6 +7,7 @@ from sklearn.model_selection import StratifiedShuffleSplit, GridSearchCV
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPRegressor, MLPClassifier
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
+from sklearn import preprocessing
 
 
 def run_model(model, parameter_grid, training_set_x, training_set_y, test_set_x, test_set_y, model_name):
@@ -30,6 +31,7 @@ def run_model(model, parameter_grid, training_set_x, training_set_y, test_set_x,
     print("Model", model_name, "test set MAE is: ", round(test_mae, 3))
 
     plt.figure()
+    plt.scatter(x = training_set_y, y = training_prediction)
     plt.scatter(x = test_set_y, y = test_prediction)
     plt.show()
 
@@ -51,6 +53,11 @@ strat_train_set = strat_train_set.drop(columns=["Step"], axis = 1)
 test_y = strat_test_set["Step"]
 strat_test_set = strat_test_set.drop(columns = ["Step"], axis = 1)
 
+data_scaler = preprocessing.StandardScaler().fit(strat_train_set)
+train_x = pd.DataFrame(data_scaler.transform(strat_train_set))
+
+test_x = pd.DataFrame(data_scaler.transform(strat_test_set))
+
 
 # fig = plt.figure()
 # ax = fig.add_subplot(111, projection='3d')
@@ -63,11 +70,11 @@ strat_test_set = strat_test_set.drop(columns = ["Step"], axis = 1)
 # ax.set_zlabel('Z Label')
 
 
-pd.plotting.scatter_matrix(strat_train_set, c = train_y)
-plt.figure(0)
+pd.plotting.scatter_matrix(train_x, c = train_y)
+plt.figure()
 
 
-corr_matrix = strat_train_set.corr()
+corr_matrix = train_x.corr()
 sns.heatmap(np.abs(corr_matrix), annot = True)
 
 
@@ -82,7 +89,7 @@ nearest_n_param_grid = {
     'algorithm': ['ball_tree', 'kd_tree'],
 }
 
-run_model(nearestn, nearest_n_param_grid, strat_train_set, train_y, strat_test_set, test_y, 'Nearest Neighbor')
+run_model(nearestn, nearest_n_param_grid, train_x, train_y, test_x, test_y, 'Nearest Neighbor')
 
 #---------------------------------------------------------------------------------------------------------------
 
@@ -97,57 +104,24 @@ perceptron_model_param_grid = {
     'solver': ['adam', 'lbfgs'],
 }
 
-run_model(perceptron_model, perceptron_model_param_grid, strat_train_set, train_y, strat_test_set, test_y, 'Multi-layer Perceptron')
+run_model(perceptron_model, perceptron_model_param_grid, train_x, train_y, test_x, test_y, 'Multi-layer Perceptron')
 
 #---------------------------------------------------------------------------------------------------------------
 
-perceptron_model = MLPClassifier(random_state = 0, max_iter = 500000).fit(strat_train_set, train_y)
 
-perceptron_train_prediction = perceptron_model.predict(strat_train_set)
-perceptron_train_mae = sklearn.metrics.mean_absolute_error(perceptron_train_prediction, train_y)
-
-print("Model 2 training MAE is: ", round(perceptron_train_mae,3))
-
-perceptron_test_prediction = perceptron_model.predict(strat_test_set)
-perceptron_test_mae = sklearn.metrics.mean_absolute_error(perceptron_test_prediction, test_y)
-
-print("Model 2 test set MAE is: ", round(perceptron_test_mae,3))
-
-plt.figure(3)
-plt.scatter(x = test_y, y = perceptron_test_prediction)
-plt.show()
-
-print(perceptron_model.score(strat_test_set, test_y))
+#-------------------------------------------------Random Forest-------------------------------------------------
+randfor_model = RandomForestClassifier(random_state = 5)
 
 
+randfor_model_param_grid = {
+    'n_estimators': [10, 50, 100, 200, 500],
+    'min_samples_leaf': [0.5, 1, 2, 5, 10, 20],
+    'max_features': ['sqrt', 'log2', None],
+}
 
+run_model(randfor_model, randfor_model_param_grid, train_x, train_y, test_x, test_y, 'Random Forest')
 
-randfor_model = RandomForestClassifier(n_estimators=100).fit(strat_train_set, train_y)
-
-randfor_model_prediction = randfor_model.predict(strat_train_set)
-randfor_model_mae = sklearn.metrics.mean_absolute_error(randfor_model_prediction, train_y)
-
-print("Model 3 training MAE is: ", round(randfor_model_mae,3))
-
-randfor_test_prediction = randfor_model.predict(strat_test_set)
-randfor_test_mae = sklearn.metrics.mean_absolute_error(randfor_test_prediction, test_y)
-
-print("Model 3 test set MAE is: ", round(randfor_test_mae,3))
-
-plt.figure(4)
-plt.scatter(x = test_y, y = randfor_test_prediction)
-plt.show()
-
-
-
-print(randfor_model.score(strat_test_set, test_y))
-
-
-
-
-
-#print(corr_matrix["Step"].sort_values())
-
+#---------------------------------------------------------------------------------------------------------------
 
 
 #if __name__ == "__main__":
