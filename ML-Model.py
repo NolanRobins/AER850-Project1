@@ -34,8 +34,8 @@ def run_model(model, parameter_grid, training_set_x, training_set_y, test_set_x,
     print("Model", model_name, "test set MAE is: ", round(test_mae, 3))
 
 
-    model_recall_score = accuracy_score(y_true = test_set_y, y_pred = test_prediction, average = 'micro')
-    print("Model", model_name, "accuracy score is: ", round(model_recall_score, 3))
+    model_accuracy_score = accuracy_score(y_true = test_set_y, y_pred = test_prediction)
+    print("Model", model_name, "accuracy score is: ", round(model_accuracy_score, 3))
 
     model_precision_score = precision_score(y_true = test_set_y, y_pred = test_prediction, average = 'micro')
     print("Model", model_name, "precision score is: ", round(model_precision_score, 3))
