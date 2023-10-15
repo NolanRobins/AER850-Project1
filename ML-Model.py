@@ -29,12 +29,6 @@ def run_model(model, parameter_grid, training_set_x, training_set_y, test_set_x,
     test_prediction = best_model.predict(test_set_x)
     test_mae = sklearn.metrics.mean_absolute_error(test_prediction, test_set_y)
 
-    plt.figure()
-    plt.scatter(x = training_set_y, y = training_prediction)
-    plt.scatter(x = test_set_y, y = test_prediction)
-    plt.show()
-
-
     print("Best Hyperparameters For", model_name, ":", model_grid_search.best_params_)
     print("Model", model_name, "training MAE is: ", round(train_mae, 3))
     print("Model", model_name, "test set MAE is: ", round(test_mae, 3))
@@ -52,9 +46,10 @@ def run_model(model, parameter_grid, training_set_x, training_set_y, test_set_x,
     return [best_model, test_prediction]
 
 # def main():
-    # Read project data file
-
-
+    
+    
+    
+# Read project data file
 df = pd.read_csv("Project 1 Data.csv")
 # No missing values so no drop required
 
@@ -64,8 +59,12 @@ for train_index, test_index in split.split(df, df["Step"]):
     strat_train_set = df.loc[train_index].reset_index(drop=True)
     strat_test_set = df.loc[test_index].reset_index(drop=True)
 
+corr_matrix = strat_train_set.corr()
+
+
 train_y = strat_train_set["Step"]
 strat_train_set = strat_train_set.drop(columns=["Step"], axis = 1)
+
 test_y = strat_test_set["Step"]
 strat_test_set = strat_test_set.drop(columns = ["Step"], axis = 1)
 
@@ -73,25 +72,14 @@ data_scaler = preprocessing.StandardScaler().fit(strat_train_set)
 train_x = pd.DataFrame(data_scaler.transform(strat_train_set))
 test_x = pd.DataFrame(data_scaler.transform(strat_test_set))
 
-
-# fig = plt.figure()
-# ax = fig.add_subplot(111, projection='3d')
-# ay = fig.add_subplot()
-# strat_train_set.plot(kind="scatter", x="X", y="Z", alpha=0.1)
-# p = ax.scatter(strat_train_set["X"], strat_train_set["Y"], strat_train_set["Z"], c = train_y)
-# fig.colorbar(p)
-# ax.set_xlabel('X Label')
-# ax.set_ylabel('Y Label')
-# ax.set_zlabel('Z Label')
-
-
-pd.plotting.scatter_matrix(train_x, c = train_y)
+scatter_matrix_plot = pd.plotting.scatter_matrix(strat_train_set, c = train_y)
+plt.suptitle("Training Data Correlation Matrix")
 plt.figure()
 
 
-corr_matrix = train_x.corr()
-sns.heatmap(np.abs(corr_matrix), annot = True)
 
+sns.heatmap(np.abs(corr_matrix), annot = True)
+plt.title("Correlation Heatmap")
 
 #------------------------------------------------Nearest Neighbor-----------------------------------------------
 
@@ -148,13 +136,18 @@ confusion_disp.plot()
 plt.show()
 
 joblib.dump(nearest_n, 'nearest_n_model.joblib')
+joblib.dump(data_scaler, 'data_scaler.joblib')
+
+
+#---------------------------------------------------------------------------------------------------------------
 
 loaded_model = joblib.load('nearest_n_model.joblib')
+loaded_data_scaler = joblib.load('data_scaler.joblib')
 
 to_predict = pd.DataFrame([[9.375, 3.0625, 1.51], [6.995, 5.125, 0.3875], [0,3.0625, 1.93], [9.4, 3, 1.8], [9.4, 3, 1.3]])
 to_predict.columns = ['X', 'Y', 'Z']
 
-predictions = loaded_model.predict(pd.DataFrame(data_scaler.transform(to_predict)))
+predictions = loaded_model.predict(pd.DataFrame(loaded_data_scaler.transform(to_predict)))
 
 print(predictions)
 
