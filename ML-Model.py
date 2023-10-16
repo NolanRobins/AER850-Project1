@@ -143,6 +143,7 @@ def main():
     nearest_n_confusion_matrix = confusion_matrix(y_true = test_y, y_pred = nearest_n_test_prediction)
     confusion_disp = ConfusionMatrixDisplay(confusion_matrix=nearest_n_confusion_matrix)
     confusion_disp.plot()
+    plt.title("Nearest Neighbor Confusion Matrix")
     plt.show()
 
     joblib.dump(nearest_n, 'nearest_n_model.joblib')
